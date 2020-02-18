@@ -1,0 +1,125 @@
+sta znamo o data setu??
+
+    1. za Karaktere
+
+            svi u Img folderu se velicine 1200 * 900
+            svi u s folderu su velicine 45*45*3
+
+            da li nam trebaju svi OVI KARAKTERI???
+                slova, brojevi, (,), +, - ====> DIV I , nam NE TREBAJU????
+
+
+
+
+
+trenutno imamo:
+
+    1. za Karaktere
+
+        --> samo zagrejane FC slojeve na vrhu VGG16 koji su prosli 30epoha
+
+                za obuku su koriscene prvih 25 slika za svako slovo
+                ulazne velicine slike u mrezu su 54*54*3
+
+               --> rezultat je oko 57% sto je malo al dosta za pocetak
+            ===> model se zove: warmUpOnly54SizeVGG16.h5
+
+        ---> fineTune mrezu nad 35 prvih slika iz svake klase (poslednjih 15 ostavljati za test skup)
+            i probati sa 40 epoha...
+
+            ===> model se zove: fineTune54SizeVGG16.h5
+
+            rezultati: bice oko 75%.. ima sad 73.33 ---> to ti je kad je validacioni error oko 0.84, 0.86....
+
+
+                ---> da ga istreniramo jos 20 epopha pa ako padne error onda cemo jos probati...
+
+                 ----> ako ne onda mora sve ispocetka sa vecom slikom npr 96*96*3....
+
+
+
+            ====> samo zagrejana i trenirana na GPU ima 56%...
+
+
+        povecane ulazne slike na 96*96*3 da vidimo kad je zagreje da li ce da bude bolja tako..
+            msm trebala bi da bude.. makar za 5% ===> dobili smo 65%
+
+            fineTune msm da ce da ode na 80% al jbg... nije to bas ono sjajno i to na 30 epoha a ne na 40
+
+            76% na 30 epoha ali msm da moze jos da se istranira.... val_loss: oko 0.64 je bio
+
+            ==> pustio sam jos 30 epoha ocekujem tih 80% dobio sam IH (80% posle 60 epoha)
+                ---> mozemo probati jos 40 epoha kasnije
+
+
+    2. za klase i VEZE IZMEDJU KLASA
+
+        samo zagrejana ima oko 57.2%, fora je pocetne slike su sve iste, one DOLE SU NA DRUGIM
+            papirima OVO MORAMO DRUGACIJE DA ORGANIZUJEMO U fine_tunu....
+
+        ---> DO DATASET-a je... <----------
+        kad sam uzeo drugi deo dataSeta za TEST od 160-170 za klase i 120-131 za veze dobije se 61% samo zagrejana..
+
+
+
+
+
+
+KOJE probleme imamo u projektu???
+
+
+    8. dataset za karaktere nam je uvek SAMO BELA POZADINA, kako ce to da radi na
+        PAPIRU SA KOCKICAMA(npr ako karakter ne stane u kockicu) ili ako ima TACKICE PAPIR U POZADINI
+        NEMA SENKI NAD SLOVIMA....
+
+    9. nisam probao da dam jednu SLIKU MREZI NEGO SAMO BACH slika.
+
+
+    1. kako ucitait veliki dataset ---> u RAM ili nekom od onih tehnika..
+
+    2. kako odabrati ulaznu velicinu koja je dobra --> cim je veca slika odma bude preciznije..
+
+    3. da li postoji neka pretranirana mreza koju mogu da uzmem KAKVA JESTE...
+
+    4. kako da u pretreniranu mrezu dodam nove klase i da obucim da njih prepoznaje??
+
+
+
+    5. da li obucena na GPU u tensorflow-u moze da se koristi posle na CPU?
+
+        kazu ljudi da moze, videcemo da li ce da radi.... MOZEEEEE
+
+        samo promenis virtualno okruzenje... da nije conda nego ono standardno...
+
+        RAZLIKA???
+
+            CPU: 83.77417826652527 sekundi
+            GPU: 30.804938316345215 sekundi
+
+            ---> ovo je samo izvrsaavanje istrenirane mreze, a kod obucavanje je jos veca razlika...
+
+
+    6. da li gresim u predprocesiranju slika?
+        ---> nzm da li CNN moze da radi na grayScale jer prima 3 kanala boja...
+        ---> kontam da bi grayScale slike umanjile efekat senki...
+            ===> binarna slika bi imala samo 1 kanal isto..
+
+    7. da li biram najbolju CNN??
+        do sada radim samo sa VGG16, mozda ResNet ce da radi bolje...
+
+    8.
+
+
+sta si naucio o treniranju na GPU???
+
+    pravi zadatke od po 1.5gb rama ===> kod mene radi samo jedan al kontam da kida kad imas
+        vise rama onda on cepa paralelno...
+
+
+    BACH size MORA DA SE PODESAVA U ZAVISNOSTI KOLIKO SOPSTVENOG RAMA imas na GPU...
+
+        ----> kad sam povecao slike onda NIJE BILO DOVOLJNO MEMORIJE ZA Tensor Kernel sa tim BACH SIZE
+            i dimenzijama slike ---> treba preko 2gb RAMA
+
+        32*224*224*64 ---> ovo je neki sloj u mrezi koji POJEDE RAM (verovatno neka AKTIVACIONA MAPA...)
+
