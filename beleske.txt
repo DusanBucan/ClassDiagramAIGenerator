@@ -1,0 +1,5 @@
+
+1. u generateCode sam ti ostavio komentare za fije sta ima da se implementira gde
+  na dnu fajla sam mokovao sta treba da vrati ML deo da bi generate_code.py moglo da kreira projekat
+
+  ---> primer je za sliku d11.jpg iz testSkupa

@@ -206,24 +206,13 @@ def find_relationships(resized_image, class_array):
                 M = cv2.getRotationMatrix2D(center, 90, 1.0)
                 resized_region = cv2.warpAffine(resized_region, M, (h, w))
 
-            # e = resize_region_cnn(region)
             plt.imshow(resized_region)
             plt.show()
 
-            # print(len(region))
-            # print(len(region[0]))
-
             a = np.asarray([resized_region])
-            print(a.shape)
 
             features = base_model_relationship.predict(a, batch_size=32, verbose=1)
             features = features.reshape((features.shape[0], 512 * 9 * 9))
-
-            print(features.shape)
-
-            # resized = cv2.resize(e, (300, 300), interpolation=cv2.INTER_NEAREST)
-            # to_predict = np.asarray([resized], dtype=np.float32)
-
             scores = model_rs.predict(features)
             print("scores: ", scores)
             # max_score = np.max(scores[0])
@@ -233,7 +222,7 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img = load_image('dataset/test/d11.jpg')
+    img = load_image('dataset/test/d12.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
                        input_shape=(224, 224, 3))
@@ -253,17 +242,10 @@ if __name__ == '__main__':
 
     for region in regions_horizontal:
         resized = cv2.resize(region[0], (224, 224), interpolation=cv2.INTER_AREA)
-
         to_predict = np.asarray([resized], dtype=np.float32) / 255.0
 
         features = base_model.predict(to_predict)
-
-        # print(features.shape)
-
         features = features.reshape((features.shape[0], 512 * 7 * 7))
-
-        # print(features.shape)
-
         scores = svm.predict_proba(features)[0]
 
         if scores[1] >= scores[0]:
