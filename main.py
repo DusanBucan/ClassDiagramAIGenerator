@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Input
 from train_char import load_svm_char
 from train_class import load_svm
 from train_relationship import load_svm_relationship
+from generate_code import Class, add_relationship, make_project
 
 
 def load_image(path):
@@ -169,10 +170,10 @@ def find_relationships(resized_image, class_array):
                                     input_shape=(300, 300, 3))
 
     for idx in range(0, len(class_array) - 1):
-        x, y, w, h = class_array[idx][1]
+        x, y, w, h = class_array[idx].img[1]
         for i in range(idx + 1, len(class_array)):
             rot = False
-            x1, y1, w1, h1 = class_array[i][1]
+            x1, y1, w1, h1 = class_array[i].img[1]
             if abs(x - x1) > abs(y - y1) and (y + h < y1 or y1 + h1 < y):
                 continue
             elif abs(x - x1) <= abs(y - y1) and (x + w < x1 or x1 + w1 < x):
@@ -215,6 +216,7 @@ def find_relationships(resized_image, class_array):
             features = features.reshape((features.shape[0], 512 * 9 * 9))
             scores = model_rs.predict(features)
             print("scores: ", scores)
+            add_relationship(scores, class_array[idx], class_array[i])
             # max_score = np.max(scores[0])
             # max_score_indx = np.argmax(scores[0])
             # print(max_score_indx)
@@ -222,7 +224,7 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img = load_image('dataset/test/d12.jpg')
+    img = load_image('dataset/test/d11.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
                        input_shape=(224, 224, 3))
@@ -239,7 +241,7 @@ if __name__ == '__main__':
     # kad klasifikuje veze.
 
     class_array = []
-
+    n = 1
     for region in regions_horizontal:
         resized = cv2.resize(region[0], (224, 224), interpolation=cv2.INTER_AREA)
         to_predict = np.asarray([resized], dtype=np.float32) / 255.0
@@ -249,8 +251,22 @@ if __name__ == '__main__':
         scores = svm.predict_proba(features)[0]
 
         if scores[1] >= scores[0]:
-            class_array.append(region)
+            c = Class("Klasa" + str(n), region)
+            class_array.append(c)
             plt.imshow(region[0])
             plt.show()
+            n += 1
 
-    relationship_dic = find_relationships(resized_image, class_array)
+    find_relationships(resized_image, class_array)
+
+    print("******************************")
+    for img in class_array:
+        print(img.name)
+        for i in img.relationships:
+            print(i.type)
+        # print(img.relationships)
+    print("******************************")
+
+    make_project("./generated", "projekat", class_array)
+
+
