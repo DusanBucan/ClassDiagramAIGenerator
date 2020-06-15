@@ -3,3 +3,22 @@
   na dnu fajla sam mokovao sta treba da vrati ML deo da bi generate_code.py moglo da kreira projekat
 
   ---> primer je za sliku d11.jpg iz testSkupa
+
+
+2. Lose stvari kod OCR-a
+
+    -- TREBA kod REDA URADITI KLASteRIZACIJU da bi se RED IZDELIO NA RECI
+        (onda rec po rec procesirati kao na vezbama)
+
+    --
+
+    -- nisu sva slova kockasta --> tj dimenzija 32*32 vecina slova je visoka a usa
+
+    -- u OCR mrezu treba dodati i backGroud klasu, znaci sve
+        sto moze da se nadje, strelice, linijice sve sto nisu slova..
+
+    -- svm_ocr pored podataka iz mreze da imamo jos neke feature koje cemo da mu prosldejujemo
+        da lakse razlikuje slova..
+
+    -- ove regione bolje da selektuje
+        neam pojma blure da radimo ili nesto drugo..

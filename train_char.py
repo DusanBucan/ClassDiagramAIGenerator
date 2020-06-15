@@ -11,11 +11,11 @@ from sklearn.svm import SVC
 
 
 def load_svm_char():
-    file_svm = open('/models/SVM_chars', 'rb')
+    file_svm = open('models/SVM_chars', 'rb')
     return pickle.load(file_svm)
 
 
-def resize_region(region):
+def resize_region_OCR(region):
     return cv2.resize(region, (32, 32), interpolation=cv2.INTER_NEAREST)
 
 
@@ -37,7 +37,7 @@ def load_images_OCR(test_images=False):
                         img_words_bin = image
 
                         if img_words_bin.shape[0] != 32:
-                            img_words_bin = resize_region(img_words_bin)
+                            img_words_bin = resize_region_OCR(img_words_bin)
 
                         train_images.append(img_words_bin)
                         train_labels.append(i)
@@ -58,6 +58,16 @@ def train_OCR_NN(base_model):
 
     file_svm = open('/models/SVM_chars', 'wb')
     pickle.dump(clf_svm, file_svm)
+
+
+def predict_char(char_image, svm):
+    base_model = VGG16(weights='imagenet', include_top=False, input_tensor=Input(shape=(32, 32, 3)),
+                       input_shape=(32, 32, 3))
+
+    char_image = np.asarray([char_image])
+    features = base_model.predict(char_image, batch_size=32, verbose=1)
+    features = features.reshape((features.shape[0], 512 * 1 * 1))
+    return svm.predict(features)
 
 
 def test_OCR_NN(base_model):

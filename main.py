@@ -5,7 +5,7 @@ import numpy as np
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Input
 
-from train_char import load_svm_char
+from train_char import load_svm_char, predict_char, resize_region_OCR
 from train_class import load_svm
 from train_relationship import load_svm_relationship
 from generate_code import Class, add_relationship, make_project
@@ -38,12 +38,12 @@ def image_bin_sobel(image_sobel, avg_value, max_value):
 
 
 def dilate(image):
-    kernel = np.ones((3, 3)) # strukturni element 3x3 blok
+    kernel = np.ones((3, 3))  # strukturni element 3x3 blok
     return cv2.dilate(image, kernel, iterations=1)
 
 
 def erode(image):
-    kernel = np.ones((2, 2)) # strukturni element 3x3 blok
+    kernel = np.ones((2, 2))  # strukturni element 3x3 blok
     return cv2.erode(image, kernel, iterations=2)
 
 
@@ -113,12 +113,12 @@ def line_matching(bigger, smaller):
         return smaller[0] + smaller[2] - bigger[0]
 
 
-def findRelationShipsRegions(resized_image, direction="horizontal"):
-    img_gs = image_gray(resized_image)
+def performSobel(image, direction="horizontal", line_size=31):
+    img_gs = image_gray(image)
     if direction == "horizontal":
-        sobelx64f = cv2.Sobel(img_gs, cv2.CV_64F, 0, 1, ksize=31)
+        sobelx64f = cv2.Sobel(img_gs, cv2.CV_64F, 0, 1, ksize=line_size)
     else:
-        sobelx64f = cv2.Sobel(img_gs, cv2.CV_64F, 1, 0, ksize=31)
+        sobelx64f = cv2.Sobel(img_gs, cv2.CV_64F, 1, 0, ksize=line_size)
 
     sobelx64f = np.abs(sobelx64f)
 
@@ -136,7 +136,11 @@ def findRelationShipsRegions(resized_image, direction="horizontal"):
 
     plt.imshow(sobelxUint8, 'gray')
     plt.show()
+    return sobelxUint8
 
+
+def findRelationShipsRegions(resized_image, direction="horizontal"):
+    sobelxUint8 = performSobel(resized_image, direction)
     regions = select_roi_class(resized_image, sobelxUint8)
 
     # boje da bude recnik kasnije da uzimas sta ti treba...
@@ -223,6 +227,84 @@ def find_relationships(resized_image, class_array):
             # print(scores)
 
 
+def perform_class_OCR(OCR_region, index):
+    class_image = cv2.resize(OCR_region[0], (300, 300), interpolation=cv2.INTER_AREA)
+    char_svm = load_svm_char()
+
+
+    class_image_gray = image_gray(class_image)
+    edges = cv2.Canny(class_image_gray, 120, 200)
+    plt.imshow(edges, cmap='gray')
+    plt.show()
+
+
+    contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    regions_array = []
+
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        if w > 7 and w < 50 and h > 7  and h < 60:
+            region = class_image[y:y + h + 1, x:x + w + 1]
+            regions_array.append([region, (x, y, w, h)])
+            # cv2.rectangle(class_image, (x, y), (x + w, y + h), (0, 255, 0), 3)
+
+
+    regions_array = sorted(regions_array, key=lambda x: x[1][1]+x[1][3])
+
+    # da izdeli sve regione u redove
+
+    j = 0
+    i = 0
+    while i < len(regions_array):
+        row_string = ""
+        row = []
+        firstRowRect = regions_array[i]
+        y_row = firstRowRect[1][1] + firstRowRect[1][3]
+
+        for character in regions_array[i:]:
+            character_bottom_y = character[1][1] + character[1][3]
+            j += 1
+            if abs(character_bottom_y - y_row) < 30:
+                row.append(character)
+            else:
+                #  od tog pocinje novi red
+                break
+
+        # mozes da pustis na mrezu row da procitas nakon sortiranja
+        row = sorted(row, key=lambda x: x[1][0])
+        for row_char in row:
+            x, y, w, h = row_char[1]
+
+            # plt.imshow(row_char[0])
+            # plt.show()
+            row_char[0] = resize_region_OCR(row_char[0])
+            # plt.imshow(row_char[0])
+            # plt.show()
+
+            char_string = predict_char(row_char[0], char_svm)
+            row_string += char_string[0]
+
+            # da oznaci one koje je procitao
+            cv2.rectangle(class_image, (x, y), (x + w, y + h), (0, 255, 0), 3)
+
+        print("procitao: ", row_string)
+        i = j
+
+    plt.imshow(class_image)
+    plt.show()
+
+
+
+    #
+    # horizontal_sobel  = performSobel(class_image, line_size=11)
+    # vertical_sobel = performSobel(class_image, direction='vertical', line_size=11)
+
+
+
+    generated_class = Class("Klasa" + str(index), OCR_region)
+    return generated_class
+
+
 if __name__ == '__main__':
     img = load_image('dataset/test/d11.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
@@ -251,10 +333,8 @@ if __name__ == '__main__':
         scores = svm.predict_proba(features)[0]
 
         if scores[1] >= scores[0]:
-            c = Class("Klasa" + str(n), region)
+            c = perform_class_OCR(region, n)
             class_array.append(c)
-            plt.imshow(region[0])
-            plt.show()
             n += 1
 
     find_relationships(resized_image, class_array)
@@ -268,5 +348,3 @@ if __name__ == '__main__':
     print("******************************")
 
     make_project("./generated", "projekat", class_array)
-
-
