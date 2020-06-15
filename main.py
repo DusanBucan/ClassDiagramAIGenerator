@@ -1,6 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.cluster import KMeans
 
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Input
@@ -227,37 +228,47 @@ def find_relationships(resized_image, class_array):
             # print(scores)
 
 
-def perform_class_OCR(OCR_region, index):
-    class_image = cv2.resize(OCR_region[0], (300, 300), interpolation=cv2.INTER_AREA)
-    char_svm = load_svm_char()
 
+def calculate_row_distances(row):
+    row_distances = []
+    for m in range(len(row) - 1):
+        firstContoure = row[m]
+        secondContoure = row[m + 1]
+
+        x1, y1, w1, h1 = firstContoure[1]
+        x2, y2, w2, h2 = secondContoure[1]
+
+        distance = x2 - (x1 + w1)
+        row_distances.append(distance)
+
+    return row_distances
+
+
+def extract_rows_OCR(class_image):
+    rows = []
+    distances = []
 
     class_image_gray = image_gray(class_image)
     edges = cv2.Canny(class_image_gray, 120, 200)
     plt.imshow(edges, cmap='gray')
     plt.show()
 
-
     contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     regions_array = []
 
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
-        if w > 7 and w < 50 and h > 7  and h < 60:
+        if w > 7 and w < 50 and h > 7 and h < 60:
             region = class_image[y:y + h + 1, x:x + w + 1]
             regions_array.append([region, (x, y, w, h)])
-            # cv2.rectangle(class_image, (x, y), (x + w, y + h), (0, 255, 0), 3)
-
-
-    regions_array = sorted(regions_array, key=lambda x: x[1][1]+x[1][3])
-
-    # da izdeli sve regione u redove
+    regions_array = sorted(regions_array, key=lambda x: x[1][1] + x[1][3])
 
     j = 0
     i = 0
     while i < len(regions_array):
-        row_string = ""
         row = []
+        # koristi da se odredi sa K-means sta je razlika izmedju slova, a sta izmedju reci u jednom redu
+        row_distances = []
         firstRowRect = regions_array[i]
         y_row = firstRowRect[1][1] + firstRowRect[1][3]
 
@@ -270,36 +281,65 @@ def perform_class_OCR(OCR_region, index):
                 #  od tog pocinje novi red
                 break
 
-        # mozes da pustis na mrezu row da procitas nakon sortiranja
+        # izdvojen je ceo jedan red
         row = sorted(row, key=lambda x: x[1][0])
-        for row_char in row:
-            x, y, w, h = row_char[1]
-
-            # plt.imshow(row_char[0])
-            # plt.show()
-            row_char[0] = resize_region_OCR(row_char[0])
-            # plt.imshow(row_char[0])
-            # plt.show()
-
-            char_string = predict_char(row_char[0], char_svm)
-            row_string += char_string[0]
-
-            # da oznaci one koje je procitao
-            cv2.rectangle(class_image, (x, y), (x + w, y + h), (0, 255, 0), 3)
-
-        print("procitao: ", row_string)
+        # da preskocis sve konture koje su u tom redu da njih ne gleda petlja
         i = j
+        # izracunaj distance u svakom row izmedju kontura.
+        row_distances = calculate_row_distances(row)
+        distances += row_distances
+        rows.append(row)
+
+    distances = np.asarray(distances).reshape(-1, 1)
+    k_means = KMeans(n_clusters=2, random_state=0).fit(distances)
+    return rows, k_means, regions_array
+
+
+def process_row_OCR(row, row_indx, kmeans, svm_char):
+    words = []
+    word = ""
+    distances = calculate_row_distances(row)
+    # ovo je da posle poslednje konture u redu nista ne znaci
+    # koje je rastojanje a da ne moram da petljam sa indeksima
+    distances.append(-100)
+    distance_types = kmeans.predict(np.asarray(distances).reshape(-1, 1))
+
+    for region_indx, row_region in enumerate(row):
+
+        row_region[0] = resize_region_OCR(row_region[0])
+        char_string = predict_char(row_region[0], svm_char)
+        word += char_string[0]
+
+        dist_type = distance_types[region_indx]
+        # da li ce rastojanje izmedju reci uvek da bude 1
+        # a rastojanje unutar reci da bude 0 u kmeans..
+        if dist_type == 1:
+            words.append(word)
+            word = ""
+
+    if word not in words:
+        words.append(word)
+
+    return words
+
+def perform_class_OCR(OCR_region, index):
+    class_image = cv2.resize(OCR_region[0], (300, 300), interpolation=cv2.INTER_AREA)
+    char_svm = load_svm_char()
+
+
+
+    rows, kmeans, all_regions = extract_rows_OCR(class_image)
+    for indx, row in enumerate(rows):
+        row_words = process_row_OCR(row, indx, kmeans, char_svm)
+        print("slika: ", index, " index reda: ", indx,  " procitao: ", row_words)
+
+
+    for reg in all_regions:
+        (x, y, w, h) = reg[1]
+        cv2.rectangle(class_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     plt.imshow(class_image)
     plt.show()
-
-
-
-    #
-    # horizontal_sobel  = performSobel(class_image, line_size=11)
-    # vertical_sobel = performSobel(class_image, direction='vertical', line_size=11)
-
-
 
     generated_class = Class("Klasa" + str(index), OCR_region)
     return generated_class

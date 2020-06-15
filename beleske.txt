@@ -9,6 +9,7 @@
 
     -- TREBA kod REDA URADITI KLASteRIZACIJU da bi se RED IZDELIO NA RECI
         (onda rec po rec procesirati kao na vezbama)
+        -- x-razmake izmedju kontura da klasifikuje u 2 klastera (medjuslovno rastojanje, medjurecno rastojanje)
 
     --
 
@@ -22,3 +23,9 @@
 
     -- ove regione bolje da selektuje
         neam pojma blure da radimo ili nesto drugo..
+
+
+row distances
+
+    za unutarrecno rastojanje se dobijaju male distance <=2 a za
+        recno rastojanje se dobijaju vece distance od 10..
