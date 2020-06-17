@@ -64,8 +64,8 @@ def extract_features_with_cnn():
                 ss.switchToSelectiveSearchQuality()
                 ssresults = ss.process()
                 imout = image.copy()
-                postiveCounter = 0
-                falseCounter = 0
+                postive_counter = 0
+                false_counter = 0
                 flag = 0
                 fflag = 0
                 bflag = 0
@@ -82,7 +82,7 @@ def extract_features_with_cnn():
                             iou = get_iou(gtval, {"x1": x, "x2": x + w, "y1": y, "y2": y + h})
 
                             if iou > 0.90:
-                                if postiveCounter < 15:
+                                if postive_counter < 15:
                                     timage = imout[y:y + h, x:x + w]
 
                                     resized = cv2.resize(timage, (224, 224), interpolation=cv2.INTER_AREA)
@@ -91,18 +91,18 @@ def extract_features_with_cnn():
                                     if ground_label == "klasa":
                                         train_images_class.append(resized)
                                         train_labels_class.append(ground_label)
-                                    postiveCounter += 1
+                                    postive_counter += 1
                                 else:
                                     fflag = 1
                             if iou < 0.4:
-                                if falseCounter < 8:
+                                if false_counter < 8:
                                     timage = imout[y:y + h, x:x + w]
                                     resized = cv2.resize(timage, (224, 224), interpolation=cv2.INTER_AREA)
                                     resized = img_to_array(resized)
                                     if ground_label == "klasa":
                                         train_images_class.append(resized)
                                         train_labels_class.append("background")
-                                    falseCounter += 1
+                                    false_counter += 1
                                 else:
                                     bflag = 1
 
@@ -128,7 +128,7 @@ def extract_features_with_cnn():
 
 
 def load_svm():
-    file = open('models/SVM_CNN', 'rb')
+    file = open('models/SVM_CNN_class', 'rb')
     return pickle.load(file)
 
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # print("Train accuracy: ", accuracy_score(y_train, y_train_pred))
     # print("Validation accuracy: ", accuracy_score(y_test, y_test_pred))
     #
-    # file_svm = open('/models/SVM_CNN', 'wb')
+    # file_svm = open('/models/SVM_CNN_class', 'wb')
     # pickle.dump(clf_svm, file_svm)
     #
     test(base_model)

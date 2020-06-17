@@ -15,6 +15,11 @@ def load_svm_char():
     return pickle.load(file_svm)
 
 
+def load_svm_char_bin():
+    file_svm = open('models/SVM_chars_bin', 'rb')
+    return pickle.load(file_svm)
+
+
 def resize_region_OCR(region):
     return cv2.resize(region, (32, 32), interpolation=cv2.INTER_NEAREST)
 
