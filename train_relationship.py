@@ -7,7 +7,6 @@ from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Input
 from tensorflow.keras.preprocessing.image import img_to_array
 
-from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 

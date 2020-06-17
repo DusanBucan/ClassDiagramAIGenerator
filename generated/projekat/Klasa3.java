@@ -1,14 +1,14 @@
 package model;
 
-import model.Klasa2;
+import model.Klasa1;
 
 public class Klasa3 {
 
-	private Klasa2 klasa2;
+	private Klasa1 klasa1;
 	public Klasa3 () { }
 
-	public Klasa3 (Klasa2 klasa2) {
-		this.klasa2 = klasa2;
+	public Klasa3 (Klasa1 klasa1) {
+		this.klasa1 = klasa1;
 	}
 
 

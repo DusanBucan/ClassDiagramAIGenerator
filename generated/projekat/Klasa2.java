@@ -1,15 +1,14 @@
 package model;
 
 import model.Klasa1;
-import model.Klasa3;
 
-public class Klasa2 extends Klasa1 {
+public class Klasa2 {
 
-	private Collection<Klasa3> klasa3Collection;
+	private Klasa1 klasa1;
 	public Klasa2 () { }
 
-	public Klasa2 (Collection<Klasa3> klasa3Collection) {
-		this.klasa3Collection = klasa3Collection;
+	public Klasa2 (Klasa1 klasa1) {
+		this.klasa1 = klasa1;
 	}
 
 

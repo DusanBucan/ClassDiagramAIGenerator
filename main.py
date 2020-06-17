@@ -10,7 +10,6 @@ from OCR import perform_class_OCR
 from train_class import load_svm
 from train_relationship import load_svm_relationship
 from generate_code import Class, add_relationship, make_project
-from tss import read_char
 
 
 def load_image(path):

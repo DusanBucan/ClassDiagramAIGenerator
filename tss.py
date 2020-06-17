@@ -20,8 +20,8 @@ def read_char(image):
     # noise
     # gray = cv2.medianBlur(gray, 3)
     # gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 5)
-    plt.imshow(gray, 'gray')
-    plt.show()
+    # plt.imshow(gray, 'gray')
+    # plt.show()
     # gray = cv2.medianBlur(gray, 3)
     # write the grayscale image to disk as a temporary file so we can
     # apply OCR to it
@@ -40,7 +40,7 @@ def read_char(image):
     config = "--psm 9"
     text = pytesseract.image_to_string(gray, config=config)
     # os.remove(filename)
-    print(text)
+    # print(text)
     # show the output images
     # cv2.waitKey(0)
     # class_array.append(c)

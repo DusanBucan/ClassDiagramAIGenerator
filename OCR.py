@@ -61,6 +61,9 @@ def make_OCR_rectangles(class_image):
 
     mser = cv2.MSER_create()
     gray = cv2.cvtColor(class_image, cv2.COLOR_BGR2GRAY)  # Converting to GrayScale
+
+    plt.imshow(gray, 'gray')
+    plt.show()
     # gray_img = class_image.copy()
 
     regions, _ = mser.detectRegions(gray)
@@ -78,7 +81,7 @@ def make_OCR_rectangles(class_image):
         w = x_max - x_min
         h = y_max - y_min
 
-        if w > 60 or h > 50 or w * h > 2500 or (h < 5 and w > 30):
+        if w > 60 or h > 50 or w * h > 2500 or (h < 5 and w > 30) or h * 10 < w or h > w * 10:
             continue
 
         rect = dict()
@@ -171,6 +174,7 @@ def extract_rows_OCR(class_image):
             if abs(character_bottom_y - y_row) < 30:
                 row.append(character)
             else:
+                j -= 1
                 #  od tog pocinje novi red
                 break
 
@@ -186,12 +190,11 @@ def extract_rows_OCR(class_image):
         y1 = min([r["y1"] for r in row])
         x2 = max([r["x2"] for r in row])
         y2 = max([r["y2"] for r in row])
-
         new_row = dict()
         new_row['x1'] = x1
-        new_row['x2'] = x1
-        new_row['y1'] = x1
-        new_row['y2'] = x1
+        new_row['x2'] = x2
+        new_row['y1'] = y1
+        new_row['y2'] = y2
         new_row["image"] = class_image[y1: y2 + 1, x1: x2 + 1]
         # izracunaj distance u svakom row izmedju kontura.
         # row_distances = calculate_row_distances(row)
@@ -221,7 +224,7 @@ def process_row_OCR(row, svm_char):
         # row_region["image"] = resize_region_OCR(row_region["image"])
         # char_string = predict_char(row_region["image"], svm_char)
         # plt.imshow(row_region["image"])
-    word += read_char(row["image"])
+    return read_char(row["image"])
 
         # plt.imshow(row_region["image"])
         # plt.show()
@@ -235,9 +238,9 @@ def process_row_OCR(row, svm_char):
         #     word = ""
 
     # if word not in words:
-    words.append(word)
+    # words.append(word)
 
-    return words
+    # return words
 
 
 def get_iou(bb1, bb2):
@@ -291,17 +294,18 @@ def perform_class_OCR(OCR_region, index):
     char_svm = load_svm_char()
 
     rows, all_regions = extract_rows_OCR(class_image)
-    print(len(rows[0]))
+    text_array = []
     for indx, row in enumerate(rows):
-        row_words = process_row_OCR(row, char_svm)
-        print("slika: ", index, " index reda: ", indx, " procitao: ", row_words)
+        row_words = read_char(row["image"])
+        text_array.append(row_words)
+        # print("slika: ", index, " index reda: ", indx, " procitao: ", row_words)
     print("****")
-    # for reg in all_regions:
-    #     (x1, y1, x2, y2) = (reg["x1"], reg["y1"], reg["x2"], reg["y2"])
-    #     cv2.rectangle(class_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    for reg in all_regions:
+        (x1, y1, x2, y2) = (reg["x1"], reg["y1"], reg["x2"], reg["y2"])
+        cv2.rectangle(class_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     plt.imshow(class_image)
     plt.show()
 
-    generated_class = Class("Klasa" + str(index), OCR_region)
+    generated_class = Class(text_array, OCR_region)
     return generated_class
