@@ -25,7 +25,3 @@
         neam pojma blure da radimo ili nesto drugo..
 
 
-row distances
-
-    za unutarrecno rastojanje se dobijaju male distance <=2 a za
-        recno rastojanje se dobijaju vece distance od 10..
