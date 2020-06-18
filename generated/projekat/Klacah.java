@@ -1,9 +1,8 @@
 package model;
 
-import model.Kage;
 import model.KlasaC;
 
-public class Klacah extends Kage {
+public class Klacah {
 
 	private int flot;
 	private Collection<KlasaC> klasacCollection;

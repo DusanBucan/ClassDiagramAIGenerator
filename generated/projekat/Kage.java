@@ -1,7 +1,8 @@
 package model;
 
+import model.Klacah;
 
-public class Kage {
+public class Kage extends Klacah {
 
 	private int GAnt;
 	public int hMAG;

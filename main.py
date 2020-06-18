@@ -221,7 +221,10 @@ def find_relationships(resized_image, class_array):
             features = features.reshape((features.shape[0], 512 * 9 * 9))
             scores = model_rs.predict(features)
             print("scores: ", scores)
-            add_relationship(scores, class_array[idx], class_array[i])
+            if rot and y1 < y:
+                add_relationship(scores, class_array[i], class_array[idx])
+            else:
+                add_relationship(scores, class_array[idx], class_array[i])
             # max_score = np.max(scores[0])
             # max_score_indx = np.argmax(scores[0])
             # print(max_score_indx)

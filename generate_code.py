@@ -1,5 +1,4 @@
 import os
-import sys
 import string
 from collections import Counter
 
@@ -13,11 +12,9 @@ class Class:
 
     def __init__(self, text_array, img=None):
         self.img = img
-        self.coordinates = []
         self.name = self.set_name(text_array[0])
         self.attributes, self.methods = self.add_atributtes_and_methods(text_array)
-        self.relationships = []  # ovo je da se na osnovu veza naprave npr liste atributa (ako je ovo klasa auto)
-        # da se kreira atribut tockovi koji ce biti lista ciji su elementi tockovi
+        self.relationships = []
 
     def set_name(self, name):
         return ''.join([name[i] for i in range(0, len(name)) if name[i] in alpha])
@@ -120,19 +117,9 @@ def add_relationship(relationship, class_a, class_b):
     elif relationship == "realizacija_levo":
         class_b.add_relationship(Relationship("interfejs", class_a))
     elif relationship == "zavisnost_desno":
-        class_a.add_relationship(Relationship("jedan", class_b))
+        class_a.add_relationship(Relationship("kreira", class_b))
     elif relationship == "zavisnost_levo":
-        class_b.add_relationship(Relationship("jedan", class_a))
-
-# ovde da se na osnovu rezultata OCR-a upisu naziv klase i osnovni atributi
-def generateClassObjectCode(class_data, class_name, all_relationships):
-    newClass = Class(class_name)
-    newClass.attributes = class_data['attributes']
-    newClass.methods = class_data['methods']
-
-    # treba proci kroz sve veze i videti od kojih treba praviti atribute tipa liste, set-a..
-
-    return newClass
+        class_b.add_relationship(Relationship("kreira", class_a))
 
 
 def write_class_object_to_file(class_data: Class, class_path):
@@ -187,6 +174,11 @@ def write_class_object_to_file(class_data: Class, class_path):
             f.write("\t\tthis." + param_name + " = " + param_name + ";\n")
         f.write("\t}\n\n")
 
+    for rs in class_data.relationships:
+        if rs.type == "kreira":
+            f.write("\n\tpublic " + rs.class_a.name + " create" + rs.class_a.name + " ( ) {\n\t\treturn null;\n\t}\n")
+
+
     for m in class_data.methods:
         f.write("\n\t")
         if m.private:
@@ -197,7 +189,6 @@ def write_class_object_to_file(class_data: Class, class_path):
 
     f.write("\n}\n")
     f.close()
-    pass
 
 
 def make_project(path, name, classes_data):
@@ -209,49 +200,3 @@ def make_project(path, name, classes_data):
         class_path = path + '/' + name + '/' + class_name + '.java'
 
         write_class_object_to_file(class_data, class_path)
-
-
-if __name__ == '__main__':
-    prName = sys.argv[1]
-    prPath = sys.argv[2]
-
-    # ovako nesto treba da vrati ML deo da bi GeneretaCode radilo, implement fije do kraja..
-    ml_returned_classData = [
-        {"class_name": "KlasaA",
-         "coordinates": [],
-         "atributes": [
-            {"scope": "public", "name": "a", "type": "int"},
-            {"scope": "public", "name": "b", "type": "int"},
-         ],
-         "methods": [
-             {"scope": "public", "name": "sum", "retVal_type": "int", "args": []},
-         ]
-        },
-        {"class_name": "KlasaB",
-         "coordinates": [],
-         "atributes": [
-             {"scope": "public", "name": "a", "type": "int"},
-             {"scope": "public", "name": "b", "type": "int"},
-         ],
-         "methods": [
-             {"scope": "public", "name": "sum", "retVal_type": "int", "args": []},
-         ]
-         },
-        {"class_name": "KlasaC",
-         "coordinates": [],
-         "atributes": [
-             {"scope": "public", "name": "a", "type": "int"},
-             {"scope": "public", "name": "b", "type": "int"},
-         ],
-         "methods": [
-             {"scope": "public", "name": "sum", "retVal_type": "int", "args": []},
-         ]
-         }
-    ]
-
-    ml_returned_relationshipData = [
-        {"coordinates": [], "relationship_type": "realizacija_levo"},
-        {"coordinates": [], "relationship_type": "kompozicija_desno"}
-    ]
-
-    make_project(prPath, prName, ml_returned_classData, ml_returned_relationshipData)
