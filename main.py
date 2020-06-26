@@ -106,12 +106,14 @@ def select_roi_class(image_orig, image_bin):
 
 
 def line_matching(bigger, smaller):
-    if bigger[0] < smaller[0] and bigger[0] + bigger[2] > smaller[0] + smaller[2]:
+    if bigger[0] <= smaller[0] and bigger[0] + bigger[2] >= smaller[0] + smaller[2]:
         return smaller[2]
-    elif bigger[0] < smaller[0]:
+    elif bigger[0] <= smaller[0]:
         return bigger[0] + bigger[2] - smaller[0]
-    elif bigger[0] + bigger[2] > smaller[0] + smaller[2]:
+    elif bigger[0] + bigger[2] >= smaller[0] + smaller[2]:
         return smaller[0] + smaller[2] - bigger[0]
+    else:
+        return 0
 
 
 def performSobel(image, direction="horizontal", line_size=31):
