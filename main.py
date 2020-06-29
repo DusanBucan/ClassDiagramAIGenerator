@@ -2,11 +2,11 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Input
 
 from OCR import perform_class_OCR
+from evaluateModel import init_evaluation_data
 from train_class import load_svm
 from train_relationship import load_svm_relationship
 from generate_code import Class, add_relationship, make_project
@@ -170,7 +170,7 @@ def resize_region_cnn(region):
 
 def find_relationships(resized_image, class_array):
     model_rs = load_svm_relationship()
-    relationship_dic = {}
+    all_relationships = []
 
     base_model_relationship = VGG16(weights='imagenet', include_top=False,
                                     input_tensor=Input(shape=(300, 300, 3)),
@@ -224,13 +224,16 @@ def find_relationships(resized_image, class_array):
             scores = model_rs.predict(features)
             print("scores: ", scores)
             if rot and y1 < y:
-                add_relationship(scores, class_array[i], class_array[idx])
+                r = add_relationship(scores, class_array[i], class_array[idx])
+                all_relationships.append(r)
             else:
-                add_relationship(scores, class_array[idx], class_array[i])
+                r = add_relationship(scores, class_array[idx], class_array[i])
+                all_relationships.append(r)
             # max_score = np.max(scores[0])
             # max_score_indx = np.argmax(scores[0])
             # print(max_score_indx)
             # print(scores)
+    return all_relationships
 
 
 if __name__ == '__main__':
@@ -241,8 +244,11 @@ if __name__ == '__main__':
     svm = load_svm()
     print(len(img), len(img[0]))
 
+    evaluationMatricData = init_evaluation_data("dataset/test/groudTruth/ground_truth_d11.txt")
+
     resized_image = resize_image(img)
     regions_horizontal = findRelationShipsRegions(resized_image, "horizontal")
+
 
     # mozes da prodjes kroz sve njih i da ih guras kroz mrezu, one koje klasifikuje kao
     # kao uzmes i dodas ih u recnik..
@@ -265,7 +271,7 @@ if __name__ == '__main__':
             class_array.append(c)
             n += 1
 
-    find_relationships(resized_image, class_array)
+    all_relationShips = find_relationships(resized_image, class_array)
 
     print("******************************")
     for img in class_array:
@@ -276,3 +282,10 @@ if __name__ == '__main__':
     print("******************************")
 
     make_project("./generated", "projekat", class_array)
+
+    # show statistic for generated data
+    evaluationMatricData.set_generated_classes(class_array)
+    evaluationMatricData.set_generated_relationships(all_relationShips)
+    evaluationMatricData.show_statistic()
+
+

@@ -76,10 +76,14 @@ def shared_chars(s1, s2):
 
 
 class Relationship:
-    def __init__(self, rel_type, class_a):
+
+    def __init__(self, rel_type=None, class_a=None, type_name=None, class_b=None):
+        self.type_name = type_name
         self.type = rel_type
         self.class_a = class_a
         self.private = True
+        self.class_b = class_b
+
 
 
 class AoM:
@@ -95,6 +99,9 @@ def init_project(name, path):
 
 
 def add_relationship(relationship, class_a, class_b):
+
+    relationShip = Relationship("", class_a=class_a, class_b=class_b, type_name=relationship)
+
     if relationship == "asocijacija":
         class_a.add_relationship(Relationship("jedan", class_b))
         class_b.add_relationship(Relationship("jedan", class_a))
@@ -120,6 +127,8 @@ def add_relationship(relationship, class_a, class_b):
         class_a.add_relationship(Relationship("kreira", class_b))
     elif relationship == "zavisnost_levo":
         class_b.add_relationship(Relationship("kreira", class_a))
+
+    return relationShip
 
 
 def write_class_object_to_file(class_data: Class, class_path):
