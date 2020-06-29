@@ -176,7 +176,6 @@ def find_relationships(resized_image, class_array):
                                     input_tensor=Input(shape=(300, 300, 3)),
                                     input_shape=(300, 300, 3))
 
-    print(len(class_array), "************")
     for idx in range(0, len(class_array) - 1):
         x, y, w, h = class_array[idx].img[1]
         for i in range(idx + 1, len(class_array)):
@@ -239,7 +238,7 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img_name = "dp7"
+    img_name = "d"
     img = load_image('dataset/test/' + img_name + '.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
