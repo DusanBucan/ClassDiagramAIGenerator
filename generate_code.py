@@ -5,7 +5,7 @@ from collections import Counter
 
 alpha = list(string.ascii_letters)
 chars = ['+', "-", "(", ")", ":"]
-types = ["string", "int", "boolean", "long", "double", "float", "void"]
+types = ["String", "int", "boolean", "long", "double", "float", "void"]
 
 
 class Class:
@@ -25,6 +25,7 @@ class Class:
     def add_atributtes_and_methods(self, text_array):
         attributes = []
         methods = []
+        print(text_array)
         for i in range(1, len(text_array)):
             text = text_array[i]
             text = ''.join(
