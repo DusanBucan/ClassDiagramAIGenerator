@@ -244,7 +244,7 @@ if __name__ == '__main__':
     svm = load_svm()
     print(len(img), len(img[0]))
 
-    evaluationMatricData = init_evaluation_data("dataset/test/groudTruth/ground_truth_d11.txt")
+    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_d11.txt")
 
     resized_image = resize_image(img)
     regions_horizontal = findRelationShipsRegions(resized_image, "horizontal")

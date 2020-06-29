@@ -1,0 +1,12 @@
+{  "classes":
+        [
+            {"name":"KlasaA"},
+            {"name":"KlasaB"},
+            {"name":"KlasaC"}
+        ],
+    "relationships":
+        [
+            {"type_name": "kompozicija_levo"},
+            {"type_name": "generalizacija_levo"}
+        ]
+}
