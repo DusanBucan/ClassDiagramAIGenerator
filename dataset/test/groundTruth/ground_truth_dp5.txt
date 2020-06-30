@@ -1,0 +1,42 @@
+{  "classes":
+        [
+            {
+                "text_array":["Osoba",
+                               "- ime : string",
+                               "- prezime : String",
+                               "+ ispit() : void"],
+                "region": [75, 0, 326, 211],
+                "relationships": [
+                    {
+                        "type" : "jedan",
+                        "type_name": "asocijacija"
+                    }
+                ]
+            },
+            {
+                "text_array":["Student",
+                               "+ index : String",
+                               "+ prosek : double",
+                               "+ podaci() : void"],
+                "region": [633, 9, 883, 194],
+                "relationships":[
+                    {
+                        "type" : "abstaraktna",
+                        "type_name": "generalizacija"
+                    }
+                ]
+            },
+            {
+                "text_array":["Racun",
+                               "- broj : int",
+                               "+ racun() : void"],
+                "region": [89, 422, 256, 567],
+                "relationships": [
+                    {
+                        "type" : "jedan",
+                        "type_name": "asocijacija"
+                    }
+                ]
+            }
+        ]
+}
