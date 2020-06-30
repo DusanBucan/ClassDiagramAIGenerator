@@ -1,0 +1,44 @@
+{  "classes":
+        [
+            {
+                "text_array":["KlasaA",
+                               "+ a int",
+                               "+ b int",
+                               "+ sum() int"],
+                "region": [48, 9, 279, 199],
+                "relationships": [
+                    {
+                        "type" : "vise",
+                        "type_name": "kompozicija"
+                    }
+                ]
+
+            },
+            {
+                "text_array":["KlasaB",
+                               "+ a int",
+                               "+ b int",
+                               "+ sum() int"],
+                "region": [41, 418, 254, 565],
+                "relationships":[
+                    {
+                        "type" : "abstaraktna",
+                        "type_name": "generalizacija"
+                    }
+                ]
+            },
+            {
+                "text_array":["KlasaC",
+                               "+ a int",
+                               "+ b int",
+                               "+ sum() int"],
+                "region": [527, 36, 720, 222],
+                "relationships":[
+                    {
+                        "type" : "jedan",
+                        "type_name": "kompozicija"
+                    }
+                ]
+            }
+        ]
+}

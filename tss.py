@@ -30,7 +30,9 @@ def read_char(image):
 
     # ne znam da li ovo treba na linuxu
     # ako treba namesti putanju, ako ne zakomentarisi
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+    # @TODO: NIJE TA PUTANJA KOD MENE, mada ni ne treba putanja..
+    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
     # 7 posmatra sliku kao red reci  nije bas toliko dobro
     # 8 posmatra sliku kao jednu rec
