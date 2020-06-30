@@ -170,12 +170,9 @@ def resize_region_cnn(region):
 
 def find_relationships(resized_image, class_array):
     model_rs = load_svm_relationship()
-    all_relationships = []
-
     base_model_relationship = VGG16(weights='imagenet', include_top=False,
                                     input_tensor=Input(shape=(300, 300, 3)),
                                     input_shape=(300, 300, 3))
-
     for idx in range(0, len(class_array) - 1):
         x, y, w, h = class_array[idx].img[1]
         for i in range(idx + 1, len(class_array)):
@@ -224,16 +221,13 @@ def find_relationships(resized_image, class_array):
             scores = model_rs.predict(features)
             print("scores: ", scores)
             if rot and y1 < y:
-                r = add_relationship(scores, class_array[i], class_array[idx])
-                all_relationships.append(r)
+                add_relationship(scores, class_array[i], class_array[idx])
             else:
                 r = add_relationship(scores, class_array[idx], class_array[i])
-                all_relationships.append(r)
             # max_score = np.max(scores[0])
             # max_score_indx = np.argmax(scores[0])
             # print(max_score_indx)
             # print(scores)
-    return all_relationships
 
 
 if __name__ == '__main__':
@@ -271,7 +265,7 @@ if __name__ == '__main__':
             class_array.append(c)
             n += 1
 
-    all_relationShips = find_relationships(resized_image, class_array)
+    find_relationships(resized_image, class_array)
 
     print("******************************")
     for img in class_array:
@@ -285,7 +279,6 @@ if __name__ == '__main__':
 
     # show statistic for generated data
     evaluationMatricData.set_generated_classes(class_array)
-    evaluationMatricData.set_generated_relationships(all_relationShips)
     evaluationMatricData.show_statistic()
 
 

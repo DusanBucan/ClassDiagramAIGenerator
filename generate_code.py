@@ -11,10 +11,18 @@ types = ["string", "int", "boolean", "long", "double", "float", "void"]
 class Class:
 
     def __init__(self, text_array, img=None):
-        self.img = img
+
         self.name = self.set_name(text_array[0])
         self.attributes, self.methods = self.add_atributtes_and_methods(text_array)
         self.relationships = []
+        if img:
+            self.img = img
+            x, y, w, h = img[1]
+            self.coordinates = {"x1": x, "y1": y, "x2": x+w, "y2": y+h}
+
+    def set_coordinates(self, coordinates):
+        x, y, x2, y2 = coordinates
+        self.coordinates = {"x1": x, "y1": y, "x2": x2, "y2": y2}
 
     def set_name(self, name):
         return ''.join([name[i] for i in range(0, len(name)) if name[i] in alpha])
@@ -77,12 +85,11 @@ def shared_chars(s1, s2):
 
 class Relationship:
 
-    def __init__(self, rel_type=None, class_a=None, type_name=None, class_b=None):
+    def __init__(self, rel_type=None, class_a=None, type_name=None):
         self.type_name = type_name
         self.type = rel_type
         self.class_a = class_a
         self.private = True
-        self.class_b = class_b
 
 
 
@@ -99,36 +106,33 @@ def init_project(name, path):
 
 
 def add_relationship(relationship, class_a, class_b):
-
-    relationShip = Relationship("", class_a=class_a, class_b=class_b, type_name=relationship)
-
+    if len(relationship) > 0:
+        relationship = relationship[0]
     if relationship == "asocijacija":
-        class_a.add_relationship(Relationship("jedan", class_b))
-        class_b.add_relationship(Relationship("jedan", class_a))
+        class_a.add_relationship(Relationship("jedan", class_b, type_name=relationship))
+        class_b.add_relationship(Relationship("jedan", class_a, type_name=relationship))
     elif relationship == "agregacija_desno":
-        class_b.add_relationship(Relationship("vise", class_a))
+        class_b.add_relationship(Relationship("vise", class_a, type_name=relationship))
     elif relationship == "agregacija_levo":
-        class_a.add_relationship(Relationship("vise", class_b))
+        class_a.add_relationship(Relationship("vise", class_b, type_name=relationship))
     elif relationship == "generalizacija_desno":
-        class_a.add_relationship(Relationship("abstaraktna", class_b))
+        class_a.add_relationship(Relationship("abstaraktna", class_b, type_name=relationship))
     elif relationship == "generalizacija_levo":
-        class_b.add_relationship(Relationship("abstaraktna", class_a))
+        class_b.add_relationship(Relationship("abstaraktna", class_a, type_name=relationship))
     elif relationship == "kompozicija_desno":
-        class_a.add_relationship(Relationship("jedan", class_b))
-        class_b.add_relationship(Relationship("vise", class_a))
+        class_a.add_relationship(Relationship("jedan", class_b, type_name=relationship))
+        class_b.add_relationship(Relationship("vise", class_a, type_name=relationship))
     elif relationship == "kompozicija_levo":
-        class_b.add_relationship(Relationship("jedan", class_a))
-        class_a.add_relationship(Relationship("vise", class_b))
+        class_b.add_relationship(Relationship("jedan", class_a, type_name=relationship))
+        class_a.add_relationship(Relationship("vise", class_b, type_name=relationship))
     elif relationship == "realizacija_desno":
-        class_a.add_relationship(Relationship("interfejs", class_b))
+        class_a.add_relationship(Relationship("interfejs", class_b,type_name=relationship))
     elif relationship == "realizacija_levo":
-        class_b.add_relationship(Relationship("interfejs", class_a))
+        class_b.add_relationship(Relationship("interfejs", class_a, type_name=relationship))
     elif relationship == "zavisnost_desno":
-        class_a.add_relationship(Relationship("kreira", class_b))
+        class_a.add_relationship(Relationship("kreira", class_b, type_name=relationship))
     elif relationship == "zavisnost_levo":
-        class_b.add_relationship(Relationship("kreira", class_a))
-
-    return relationShip
+        class_b.add_relationship(Relationship("kreira", class_a, type_name=relationship))
 
 
 def write_class_object_to_file(class_data: Class, class_path):
