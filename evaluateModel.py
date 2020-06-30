@@ -74,8 +74,9 @@ class SimilaryMetric:
                         valid_type_acces_attr += 1
                         break
 
-        self.over_all_atribue_recognition_score = float(gen_attr_cnt) / grt_attr_cnt
-        self.type_and_access_correct_atribute_score = float(valid_type_acces_attr) / grt_attr_cnt
+        self.over_all_atribue_recognition_score = float(gen_attr_cnt) / grt_attr_cnt if grt_attr_cnt != 0 else 0
+        self.type_and_access_correct_atribute_score = float(
+            valid_type_acces_attr) / grt_attr_cnt if grt_attr_cnt != 0 else 0
 
     def calculate_class_similarity(self):
         self.class_cnt_percentage = float(len(self.class_mapping.keys())) / len(self.ground_truth_classes)
@@ -99,23 +100,25 @@ class SimilaryMetric:
                             and groud_truth_rel.type_name in generated_rel.type_name:
                         found_similar += 1
 
-        self.relationships_evalution_score = found_similar / total_rel
+        self.relationships_evalution_score = found_similar / total_rel if total_rel > 0 else 0
 
     def calculate_attribute_and_function_names_similarity(self):
         total_attr_cnt = 0
         total_method_cnt = 0
+        total_classes_name = len(self.class_mapping.keys())
 
         valid_attr_name_cnt = 0.0
         valid_method_name_cnt = 0.0
-        valid_class_names = 0.0
+        valid_classes_name = 0.0
+
+
 
         for grt_class, generated_classs in self.class_mapping.items():
             total_attr_cnt += len(grt_class.attributes)
             total_method_cnt += len(grt_class.methods)
 
             if grt_class.name == generated_classs.name:
-                valid_class_names += 1
-
+                valid_classes_name += 1
 
             for grt_method in grt_class.methods:
                 for gen_method in generated_classs.methods:
@@ -129,10 +132,9 @@ class SimilaryMetric:
                         valid_attr_name_cnt += 1
                         break
 
-        self.ocr_class_name_evalutation_score = valid_class_names / len(self.class_mapping.keys())
-        self.ocr_attr_name_evalutaion_score = valid_attr_name_cnt / total_attr_cnt
-        self.ocr_method_name_evalutaion_score = valid_method_name_cnt / total_method_cnt
-
+        self.ocr_class_name_evalutation_score = valid_classes_name / total_classes_name if total_classes_name != 0  else 0
+        self.ocr_attr_name_evalutaion_score = valid_attr_name_cnt / total_attr_cnt if total_attr_cnt != 0 else 0
+        self.ocr_method_name_evalutaion_score = valid_method_name_cnt / total_method_cnt if total_method_cnt != 0 else 0
 
     def evaluate_OCR(self):
         self.calculate_attribute_and_function_names_similarity()

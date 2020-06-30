@@ -97,12 +97,12 @@ def select_roi_class(image_orig, image_bin):
             index += 1
 
     # da se sklone horizontalne veze koje su upale
-    regions = []
-    for region in regions_array:
-        x, y, w, h = region[1]
-        if w * 3 > h and h * 3 > w:
-            regions.append(region)
-    return regions
+    # regions = []
+    # for region in regions_array:
+    #     x, y, w, h = region[1]
+    #     if w * 3 > h and h * 3 > w:
+    #         regions.append(region)
+    return regions_array
 
 
 def line_matching(bigger, smaller):
@@ -218,6 +218,10 @@ def find_relationships(resized_image, class_array):
 
             features = base_model_relationship.predict(a, batch_size=32, verbose=1)
             features = features.reshape((features.shape[0], 512 * 9 * 9))
+            max_score = max(model_rs.predict_proba(features)[0])
+            print(max_score)
+            if (max_score < 0.5):
+                continue
             scores = model_rs.predict(features)
             print("scores: ", scores)
             if rot and y1 < y:
@@ -231,7 +235,8 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img = load_image('dataset/test/d11.jpg')
+    img_name = "d11"
+    img = load_image('dataset/test/' + img_name + '.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
                        input_shape=(224, 224, 3))
@@ -252,6 +257,7 @@ if __name__ == '__main__':
 
     class_array = []
     n = 1
+    print(len(regions_horizontal))
     for region in regions_horizontal:
         resized = cv2.resize(region[0], (224, 224), interpolation=cv2.INTER_AREA)
         to_predict = np.asarray([resized], dtype=np.float32) / 255.0
@@ -260,7 +266,8 @@ if __name__ == '__main__':
         features = features.reshape((features.shape[0], 512 * 7 * 7))
         scores = svm.predict_proba(features)[0]
 
-        if scores[1] >= scores[0]:
+        # 2.5 * da bi radilio za slike koje su paint
+        if scores[1] * 2.5 >= scores[0]:
             c = perform_class_OCR(region, n)
             class_array.append(c)
             n += 1
@@ -275,10 +282,7 @@ if __name__ == '__main__':
         # print(img.relationships)
     print("******************************")
 
-    make_project("./generated", "projekat", class_array)
-
+    make_project("./generated", img_name, class_array)
     # show statistic for generated data
     evaluationMatricData.set_generated_classes(class_array)
     evaluationMatricData.show_statistic()
-
-
