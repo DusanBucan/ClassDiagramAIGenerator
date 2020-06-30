@@ -235,7 +235,7 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img_name = "d11"
+    img_name = "d12"
     img = load_image('dataset/test/' + img_name + '.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
@@ -243,7 +243,7 @@ if __name__ == '__main__':
     svm = load_svm()
     print(len(img), len(img[0]))
 
-    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_d11.txt")
+    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_" + img_name + ".txt")
 
     resized_image = resize_image(img)
     regions_horizontal = findRelationShipsRegions(resized_image, "horizontal")
