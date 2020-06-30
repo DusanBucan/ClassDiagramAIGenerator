@@ -1,16 +1,16 @@
 package model;
 
-import model.Osoba;
+import model.Osohba;
 
-public class Student extends Osoba {
+public class Student extends Osohba {
 
-	private String ndex;
+	private String index;
 	private double prosek;
 
 	public Student () { }
 
-	public Student (String ndex, double prosek) {
-		this.ndex = ndex;
+	public Student (String index, double prosek) {
+		this.index = index;
 		this.prosek = prosek;
 	}
 

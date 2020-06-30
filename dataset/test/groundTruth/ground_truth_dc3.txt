@@ -1,0 +1,25 @@
+{  "classes":
+        [
+            {
+                "text_array":["Moja",
+                               "+ a int",
+                               "+ b() void"],
+                "region": [131, 199, 403, 394],
+                "relationships": [
+                ]
+
+            },
+            {
+                "text_array":["Tvoja",
+                               "+ c float"
+                             ],
+                "region": [689, 173, 966, 385],
+                "relationships":[
+                    {
+                        "type" : "vise",
+                        "type_name": "agregacija"
+                    }
+                ]
+            }
+        ]
+}
