@@ -2,9 +2,9 @@
         [
             {
                 "text_array":["Osoba",
-                               "- ime : string",
+                               "- ime : String",
                                "- prezime : String",
-                               "+ ispit() : void"],
+                               "+ ispisi ( ) : void"],
                 "region": [75, 0, 326, 211],
                 "relationships": [
                     {
@@ -15,9 +15,9 @@
             },
             {
                 "text_array":["Student",
-                               "+ index : String",
-                               "+ prosek : double",
-                               "+ podaci() : void"],
+                               "- index : String",
+                               "- prosek : double",
+                               "+ podaci ( ) : void"],
                 "region": [633, 9, 883, 194],
                 "relationships":[
                     {
@@ -29,7 +29,7 @@
             {
                 "text_array":["Racun",
                                "- broj : int",
-                               "+ racun() : void"],
+                               "+ racun ( ) : void"],
                 "region": [89, 422, 256, 567],
                 "relationships": [
                     {

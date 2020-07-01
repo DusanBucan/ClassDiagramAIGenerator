@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,7 +8,7 @@ from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Input
 
 from OCR import perform_class_OCR
-from evaluateModel import init_evaluation_data
+from evaluateModel import init_evaluation_data, calculate_average_metrics
 from train_class import load_svm
 from train_relationship import load_svm_relationship
 from generate_code import Class, add_relationship, make_project
@@ -219,10 +221,12 @@ def find_relationships(resized_image, class_array):
             features = base_model_relationship.predict(a, batch_size=32, verbose=1)
             features = features.reshape((features.shape[0], 512 * 9 * 9))
             max_score = max(model_rs.predict_proba(features)[0])
-            print(max_score)
-            if (max_score < 0.5):
-                continue
             scores = model_rs.predict(features)
+            print(max_score)
+            print(scores)
+            if (max_score < 0.5):
+                print("veza nije dodata jer score manji od 0.5")
+                continue
             print("scores: ", scores)
             if rot and y1 < y:
                 add_relationship(scores, class_array[i], class_array[idx])
@@ -234,20 +238,42 @@ def find_relationships(resized_image, class_array):
             # print(scores)
 
 
-if __name__ == '__main__':
-    img_name = "d12"
-    img = load_image('dataset/test/' + img_name + '.jpg')
+def show_test_statistic(path):
+
+    # skip_names = ["onlineTool3", "dp7", "dc3"]
+    skip_names=[]
+
+    all_similarity_metrics = []
+    dirs = os.listdir(path)
+
+    for file in dirs:
+        endName = file.index(".")
+        img_name = file[0: endName]
+
+        if img_name in skip_names:
+            continue
+
+        evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_" + img_name + ".txt")
+
+        img = load_image('dataset/test/images/' + img_name + '.jpg')
+        class_array = generate_from_image(img, img_name)
+
+        evaluationMatricData.set_generated_classes(class_array)
+        evaluationMatricData.calculate_similarity()
+        all_similarity_metrics.append(evaluationMatricData)
+
+    #da izracuna prosecne metrike na celom test skupu
+    calculate_average_metrics(all_similarity_metrics)
+
+
+def generate_from_image(img, img_name):
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
                        input_shape=(224, 224, 3))
     svm = load_svm()
     print(len(img), len(img[0]))
-
-    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_" + img_name + ".txt")
-
     resized_image = resize_image(img)
     regions_horizontal = findRelationShipsRegions(resized_image, "horizontal")
-
 
     # mozes da prodjes kroz sve njih i da ih guras kroz mrezu, one koje klasifikuje kao
     # kao uzmes i dodas ih u recnik..
@@ -286,6 +312,19 @@ if __name__ == '__main__':
     print("******************************")
 
     make_project("./generated", img_name, class_array)
-    # show statistic for generated data
-    evaluationMatricData.set_generated_classes(class_array)
-    evaluationMatricData.show_statistic()
+    return class_array
+
+if __name__ == '__main__':
+
+    #ovo je za statistkigu nad trening skupom
+    path = "dataset/test/images"
+    show_test_statistic(path)
+
+    #ovo je kad hocemo da generisemo
+    # img_name = "dp4"
+    # image_path = 'dataset/test/' + img_name + '.jpg'
+    # img = load_image(image_path)
+    # class_array = generate_from_image(img, img_name)
+
+
+

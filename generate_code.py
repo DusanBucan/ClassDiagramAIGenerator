@@ -150,7 +150,7 @@ def write_class_object_to_file(class_data: Class, class_path):
         if rs.type == "abstaraktna":
             f.write(" extends " + rs.class_a.name)
         elif rs.type == "interfejs" and num_int == 0:
-            f.write("implements " + rs.class_a.name)
+            f.write(" implements " + rs.class_a.name)
         elif rs.type == "interfejs" and num_int != 0:
             f.write(", " + rs.class_a.name)
 

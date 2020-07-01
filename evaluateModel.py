@@ -1,5 +1,7 @@
 import json
 
+import numpy as np
+
 from utill import get_iou
 from generate_code import Relationship, Class
 
@@ -105,6 +107,10 @@ class SimilaryMetric:
 
         self.relationships_evalution_score = found_similar / total_rel if total_rel > 0 else 0
 
+        if total_rel == 0:
+            self.relationships_evalution_score = None
+
+
     def calculate_attribute_and_function_names_similarity(self):
         total_attr_cnt = 0
         total_method_cnt = 0
@@ -137,6 +143,12 @@ class SimilaryMetric:
         self.ocr_attr_name_evalutaion_score = valid_attr_name_cnt / total_attr_cnt if total_attr_cnt != 0 else 0
         self.ocr_method_name_evalutaion_score = valid_method_name_cnt / total_method_cnt if total_method_cnt != 0 else 0
 
+        if total_method_cnt == 0:
+            self.ocr_method_name_evalutaion_score = None
+        if total_attr_cnt == 0:
+            self.ocr_attr_name_evalutaion_score = None
+
+
     def evaluate_OCR(self):
         self.calculate_attribute_and_function_names_similarity()
 
@@ -151,8 +163,58 @@ class SimilaryMetric:
         print("OCR methods name evalution score: ", self.ocr_method_name_evalutaion_score)
 
 
+
+
 def init_evaluation_data(file_path=None):
     return SimilaryMetric(file_path)
+
+
+def calculate_average_metrics(sim_metrics):
+    avg_class_percentage = []
+    avg_relationship_score = []
+    avg_over_all_attribute_recognition = []
+    avg_type_and_access_correctnes = []
+    avg_class_name_percentage = []
+    avg_attr_name_percetange = []
+    avg_method_name_percentage = []
+
+    for sim_metric in sim_metrics:
+        if sim_metric.class_cnt_percentage is not None:
+            avg_class_percentage.append(sim_metric.class_cnt_percentage)
+
+        if sim_metric.relationships_evalution_score is not None:
+            avg_relationship_score.append(sim_metric.relationships_evalution_score)
+
+        if sim_metric.over_all_atribue_recognition_score is not None:
+            avg_over_all_attribute_recognition.append(sim_metric.over_all_atribue_recognition_score)
+
+        if sim_metric.type_and_access_correct_atribute_score is not None:
+            avg_type_and_access_correctnes.append(sim_metric.type_and_access_correct_atribute_score)
+
+        if sim_metric.ocr_class_name_evalutation_score is not None:
+            avg_class_name_percentage.append(sim_metric.ocr_class_name_evalutation_score)
+
+        if sim_metric.ocr_attr_name_evalutaion_score is not None:
+            avg_attr_name_percetange.append(sim_metric.ocr_attr_name_evalutaion_score)
+
+        if sim_metric.ocr_method_name_evalutaion_score is not None:
+            avg_method_name_percentage.append(sim_metric.ocr_method_name_evalutaion_score)
+
+    avg_class_percentage = np.average(avg_class_percentage)
+    avg_relationship_score = np.average(avg_relationship_score)
+    avg_over_all_attribute_recognition = np.average(avg_over_all_attribute_recognition)
+    avg_type_and_access_correctnes = np.average(avg_type_and_access_correctnes)
+    avg_class_name_percentage = np.average(avg_class_name_percentage)
+    avg_attr_name_percetange = np.average(avg_attr_name_percetange)
+    avg_method_name_percentage = np.average(avg_method_name_percentage)
+
+    print("avg class cnt percentage: ", avg_class_percentage)
+    print("avg relationship evalution score: ", avg_relationship_score)
+    print("avg total found attributes / total ground truth attributes", avg_over_all_attribute_recognition)
+    print("avg valid type and access modifier attribute score", avg_type_and_access_correctnes)
+    print("avg OCR classes name evalution score: ", avg_class_name_percentage)
+    print("avg OCR attributes name evalution score: ", avg_attr_name_percetange)
+    print("avg OCR methods name evalution score: ", avg_method_name_percentage)
 
 
 if __name__ == '__main__':

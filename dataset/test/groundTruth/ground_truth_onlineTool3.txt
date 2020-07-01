@@ -2,10 +2,10 @@
         [
             {
                 "text_array":["User",
-                               "+ username : string",
+                               "+ username : String",
                                "+ email : String",
-                               "+ getUsername() : String"],
-                "region": [241, 77, 451, 203],
+                               "+ getUsername ( ) : String"],
+                "region": [122, 109, 334, 309],
                 "relationships": [
                     {
                         "type" : "vise",
@@ -16,7 +16,7 @@
             {
                 "text_array":["Enrollment",
                                "+ date : Date"],
-                "region": [589, 93, 763, 188],
+                "region": [610, 107, 790, 284],
                 "relationships":[
                 ]
             },
@@ -24,8 +24,8 @@
                 "text_array":["Class",
                                "+ name : String",
                                "- semestar : int ",
-                               "+ getSemestar () : int"],
-                "region": [592, 294, 797, 401],
+                               "+ getSemestar ( ) : int"],
+                "region": [594, 390, 804, 565],
                 "relationships": [
                     {
                         "type" : "vise",

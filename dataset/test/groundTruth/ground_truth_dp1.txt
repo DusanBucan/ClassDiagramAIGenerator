@@ -2,17 +2,17 @@
         [
             {
                 "text_array":["Osoba",
-                               "- ime : string",
+                               "- ime : String",
                                "- prezime : String",
-                               "+ ispit() : void"],
+                               "+ ispisi ( ) : void"],
                 "region": [75, 55, 326, 256],
                 "relationships": []
             },
             {
                 "text_array":["Student",
-                               "+ index : String",
-                               "+ prosek : double",
-                               "+ podaci() : void"],
+                               "- index : String",
+                               "- prosek : double",
+                               "+ podaci ( ) : void"],
                 "region": [635, 65, 887, 253],
                 "relationships":[
                     {
