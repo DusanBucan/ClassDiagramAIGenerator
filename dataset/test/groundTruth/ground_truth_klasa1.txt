@@ -1,0 +1,13 @@
+{  "classes":
+        [
+            {
+                "text_array":["Student",
+                               "- ime String",
+                               "- prezime String",
+                               ],
+                "region": [73, 52, 330, 262],
+                "relationships": [
+                ]
+            }
+        ]
+}

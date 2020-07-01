@@ -1,0 +1,25 @@
+{  "classes":
+        [
+            {
+                "text_array":["Servis",
+                               "+ metoda() : void",
+                               "+ metodaa() : void",
+                               "+ fun() : int"],
+                "region": [94, 151, 402, 390],
+                "relationships": []
+            },
+            {
+                "text_array":["SerivsImpl",
+                               "+ atr : int",
+                               "+ att : float"
+                               ],
+                "region": [710, 161, 968, 365],
+                "relationships":[
+                    {
+                        "type" : "interfejs",
+                        "type_name": "realizacija"
+                    }
+                ]
+            }
+        ]
+}

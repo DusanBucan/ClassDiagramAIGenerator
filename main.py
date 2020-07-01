@@ -84,7 +84,7 @@ def select_roi_class(image_orig, image_bin):
                 result = line_matching(current[1], next_rect[1]) / w
 
             # spajanje dva region ako se njihova sirina preklapa 0.8 i dovoljno je blizu
-            if result > 0.8:
+            if result > 0.7:
                 x2 = min(x, x1)
                 y2 = min(y, y1)
                 w2 = max(x + w, x1 + w1) - x2
@@ -235,7 +235,7 @@ def find_relationships(resized_image, class_array):
 
 
 if __name__ == '__main__':
-    img_name = "d11"
+    img_name = "d12"
     img = load_image('dataset/test/' + img_name + '.jpg')
     base_model = VGG16(weights='imagenet', include_top=False,
                        input_tensor=Input(shape=(224, 224, 3)),
@@ -243,7 +243,7 @@ if __name__ == '__main__':
     svm = load_svm()
     print(len(img), len(img[0]))
 
-    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_d11.txt")
+    evaluationMatricData = init_evaluation_data("dataset/test/groundTruth/ground_truth_" + img_name + ".txt")
 
     resized_image = resize_image(img)
     regions_horizontal = findRelationShipsRegions(resized_image, "horizontal")
@@ -266,6 +266,9 @@ if __name__ == '__main__':
         features = features.reshape((features.shape[0], 512 * 7 * 7))
         scores = svm.predict_proba(features)[0]
 
+        # plt.imshow(region[0])
+        # plt.show()
+        # print(scores)
         # 2.5 * da bi radilio za slike koje su paint
         if scores[1] * 2.5 >= scores[0]:
             c = perform_class_OCR(region, n)

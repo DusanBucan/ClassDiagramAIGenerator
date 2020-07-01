@@ -78,6 +78,9 @@ class SimilaryMetric:
         self.type_and_access_correct_atribute_score = float(
             valid_type_acces_attr) / grt_attr_cnt if grt_attr_cnt != 0 else 0
 
+        self.over_all_atribue_recognition_score = 1 if \
+            self.over_all_atribue_recognition_score > 1 else self.over_all_atribue_recognition_score
+
     def calculate_class_similarity(self):
         self.class_cnt_percentage = float(len(self.class_mapping.keys())) / len(self.ground_truth_classes)
         self.calculate_atribute_similarity()
@@ -111,8 +114,6 @@ class SimilaryMetric:
         valid_method_name_cnt = 0.0
         valid_classes_name = 0.0
 
-
-
         for grt_class, generated_classs in self.class_mapping.items():
             total_attr_cnt += len(grt_class.attributes)
             total_method_cnt += len(grt_class.methods)
@@ -132,7 +133,7 @@ class SimilaryMetric:
                         valid_attr_name_cnt += 1
                         break
 
-        self.ocr_class_name_evalutation_score = valid_classes_name / total_classes_name if total_classes_name != 0  else 0
+        self.ocr_class_name_evalutation_score = valid_classes_name / total_classes_name if total_classes_name != 0 else 0
         self.ocr_attr_name_evalutaion_score = valid_attr_name_cnt / total_attr_cnt if total_attr_cnt != 0 else 0
         self.ocr_method_name_evalutaion_score = valid_method_name_cnt / total_method_cnt if total_method_cnt != 0 else 0
 

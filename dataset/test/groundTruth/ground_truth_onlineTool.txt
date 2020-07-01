@@ -1,0 +1,37 @@
+{  "classes":
+        [
+            {
+                "text_array":["User",
+                               "+ username : string",
+                               "+ email : String",
+                               "+ getUsername() : String"],
+                "region": [241, 77, 451, 203],
+                "relationships": [
+                    {
+                        "type" : "vise",
+                        "type_name": "agregacija"
+                    }
+                ]
+            },
+            {
+                "text_array":["Enrollment",
+                               "+ date : Date"],
+                "region": [589, 93, 763, 188],
+                "relationships":[
+                ]
+            },
+            {
+                "text_array":["Class",
+                               "+ name : String",
+                               "- semestar : int ",
+                               "+ getSemestar () : int"],
+                "region": [592, 294, 797, 401],
+                "relationships": [
+                    {
+                        "type" : "vise",
+                        "type_name": "agregacija"
+                    }
+                ]
+            }
+        ]
+}

@@ -1,0 +1,24 @@
+{  "classes":
+        [s
+            {
+                "text_array":["Enrollment",
+                               "+ date : Date"],
+                "region": [589, 93, 765, 188],
+                "relationships":[
+                ]
+            },
+            {
+                "text_array":["Class",
+                               "+ name : String",
+                               "- semestar : int ",
+                               "+ getSemestar () : int"],
+                "region": [592, 294, 799, 401],
+                "relationships": [
+                    {
+                        "type" : "vise",
+                        "type_name": "agregacija"
+                    }
+                ]
+            }
+        ]
+}

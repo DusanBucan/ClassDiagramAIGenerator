@@ -1,0 +1,42 @@
+{  "classes":
+        [
+            {
+                "text_array":["Klasa",
+                               "+ jedan float",
+                               "+ dva float",
+                               "+ fun() void"],
+                "region": [162, 68, 404, 231],
+                "relationships": [
+                    {
+                        "type" : "kreira",
+                        "type_name": "zavisnost"
+                    }
+                ]
+
+            },
+            {
+                "text_array":["Mala",
+                               "- a int"
+                               ],
+                "region": [667, 56, 847, 165],
+                "relationships":[
+                    {
+                        "type" : "jedan",
+                        "type_name": "asocijacija"
+                    }
+                ]
+            },
+            {
+                "text_array":["Nova",
+                               "- b double",
+                               "+ result() double"],
+                "region": [637, 387, 891, 520],
+                "relationships":[
+                    {
+                        "type" : "jedan",
+                        "type_name": "asocijacija"
+                    }
+                ]
+            }
+        ]
+}
